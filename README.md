@@ -14,6 +14,8 @@
 * Схематехика (PCB, Gerber, PDF)
 * 3D-модели изготовленных прототипов
 * Программы и прошивки
+* 
+***
 
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
 
@@ -24,4 +26,4 @@
 [![Lora_MM32_Slave](https://img.shields.io/badge/Lora_MM32_Slave-корневой_каталог_slave_устройства-green)](https://github.com/Bastion-RND/Lora-MM32-Slave)  
 
 [![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/irrigation_backend)
-***
+

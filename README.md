@@ -13,5 +13,5 @@
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
 
 [![irrigation-hub](https://img.shields.io/badge/irrigation-hub-Программа-управления-системой-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
-[![Client](https://img.shields.io/badge/Client-приложение-blueviolet)](https://github.com/Bastion-RND/school-lab-client) 
+[![irrigation-hub](https://img.shields.io/badge/Client-приложение-blueviolet)](https://github.com/Bastion-RND/school-lab-client) 
 

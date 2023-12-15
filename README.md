@@ -8,6 +8,13 @@
 ![MQTT](https://img.shields.io/static/v1?style=for-the-badge&message=MQTT&color=660066&logo=MQTT&logoColor=FFFFFF&label=)
 ![Read the Docs](https://img.shields.io/static/v1?style=for-the-badge&message=Read+the+Docs&color=8CA1AF&logo=Read+the+Docs&logoColor=FFFFFF&label=)
 
+В репозитории собраны все данные по проекту
+
+* Документация на используемые модули и чипы
+* Схематехика (PCB, Gerber, PDF)
+* 3D-модели изготовленных прототипов
+* Программы и прошивки
+
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
 
 ## Ссылки на связанные репозитории

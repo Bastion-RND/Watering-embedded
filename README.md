@@ -1,4 +1,5 @@
 # Watering-embedded
+Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
 ## Программный стек и технологии
 ![Espressif](https://img.shields.io/static/v1?style=for-the-badge&message=Espressif&color=E7352C&logo=Espressif&logoColor=FFFFFF&label=)
 ![MicroPython](https://img.shields.io/static/v1?style=for-the-badge&message=MicroPython&color=2B2728&logo=MicroPython&logoColor=FFFFFF&label=)
@@ -7,9 +8,7 @@
 ![MQTT](https://img.shields.io/static/v1?style=for-the-badge&message=MQTT&color=660066&logo=MQTT&logoColor=FFFFFF&label=)
 ![Read the Docs](https://img.shields.io/static/v1?style=for-the-badge&message=Read+the+Docs&color=8CA1AF&logo=Read+the+Docs&logoColor=FFFFFF&label=)
 
-
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
-Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
 
 ## Ссылки на связанные репозитории
 ***

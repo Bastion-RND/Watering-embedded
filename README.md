@@ -11,3 +11,6 @@
 
 Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
+
+[![Client](https://img.shields.io/badge/irrigation-hub-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
+

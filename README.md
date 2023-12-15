@@ -1,5 +1,10 @@
 # Watering-embedded
+![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/f40a95d9-91ca-4072-b1e5-1025971d95f5)
+
+***
+
 Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
+
 ## Программный стек и технологии
 ![Espressif](https://img.shields.io/static/v1?style=for-the-badge&message=Espressif&color=E7352C&logo=Espressif&logoColor=FFFFFF&label=)
 ![MicroPython](https://img.shields.io/static/v1?style=for-the-badge&message=MicroPython&color=2B2728&logo=MicroPython&logoColor=FFFFFF&label=)
@@ -14,10 +19,6 @@
 * Схематехика (PCB, Gerber, PDF)
 * 3D-модели изготовленных прототипов
 * Программы и прошивки
-  
-***
-
-![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/f40a95d9-91ca-4072-b1e5-1025971d95f5)
 
 
 ## Ссылки на связанные репозитории

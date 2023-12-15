@@ -17,7 +17,6 @@
   
 ***
 
-![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/f40a95d9-91ca-4072-b1e5-1025971d95f5)
 
 

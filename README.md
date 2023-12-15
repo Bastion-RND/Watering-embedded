@@ -12,7 +12,7 @@
 Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
 ***
  
-[![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
+[![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub) 
 [![Lora_MM32_Slave](https://img.shields.io/badge/Lora_MM32_Slave-корневой_каталог_slave_устройства-green)](https://github.com/Bastion-RND/Lora-MM32-Slave)  
 [![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/irrigation_backend)
 ***

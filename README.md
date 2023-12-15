@@ -14,5 +14,5 @@
 
 
 [![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_автоматического_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
-[![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/school-oscilloscope-device)  
+[![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/irrigation_backend)  
 

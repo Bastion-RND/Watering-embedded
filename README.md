@@ -14,5 +14,8 @@
 
 
 [![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_автоматического_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
+
 [![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/irrigation_backend)  
+
+[![Lora_MM32_Slave](https://img.shields.io/badge/Lora_MM32_Slave-корневой_каталог_проекта_с_slave_устройством-green)](https://github.com/Bastion-RND/Lora-MM32-Slave)  
 

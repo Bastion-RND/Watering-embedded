@@ -12,6 +12,7 @@
 Основной репозиторий для разработчиков встраемого программного обеспечения по проекту автоматизированного полива
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/c8617248-1917-4d8a-8801-2b5294613e58)
 
-[![irrigation-hub](https://img.shields.io/badge/irrigation-hub-Программа-управления-системой-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
-[![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_автоматического_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub) 
+
+[![irrigation_hub](https://img.shields.io/badge/irrigation_hub-Программа_управления_системой_автоматического_полива-blueviolet)](https://github.com/Bastion-RND/irrigation_hub)
+[![irrigation_backend](https://img.shields.io/badge/irrigation_backend-бэкенд_и_эмулятор-yellow)](https://github.com/Bastion-RND/school-oscilloscope-device)  
 

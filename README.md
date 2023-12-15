@@ -1,4 +1,3 @@
-# Watering-embedded
 ![изображение](https://github.com/Bastion-RND/Watering-embedded/assets/40739802/f40a95d9-91ca-4072-b1e5-1025971d95f5)
 
 ***

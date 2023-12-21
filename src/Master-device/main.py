@@ -14,6 +14,9 @@ from network import WLAN, STA_IF
 from lib.gsm.SIM800x import SIM800x
 from lib.umqtt.client import MQTTClient, Logger
 
+from lib.pixel import Indicate
+
+led = Indicate()
 
 global master
 master = MasterDevice()
@@ -32,17 +35,20 @@ def connect() -> WLAN:
 
     while not sta_if.isconnected():
         pass
-
+    
+    led.green_pixel()
     print('WLAN connected:', sta_if.ifconfig())
     return sta_if
 
 def on_mqtt_connected(event: str, **kwargs):
     _client: MQTTClient = kwargs.get('mqtt_client')
+    led.green_pixel()
     print(f'MQTT Connected to {_client.host}:{_client.port}')
 
 def on_mqtt_disconnected(event: str, **kwargs):
     _client: MQTTClient = kwargs.get('mqtt_client')
     _reason = kwargs.get('err', f'RC: {kwargs.get("return_code")}')
+    led.red_pixel()
     print(f'MQTT Disconnected from {_client.host}:{_client.port}, {_reason}')
 
 def on_mqtt_subscribed(event: str, **kwargs):
@@ -50,6 +56,7 @@ def on_mqtt_subscribed(event: str, **kwargs):
     for rc in kwargs.get('return_codes'):
         if rc == MQTTClient.SUBSCRIBE_RC_FAILURE:
             print(f'MQTT Subscribe failed...')
+    led.green_pixel()
     print(f'MQTT Subscribe success!')
 
 def on_mqtt_publish_received(event: str, **kwargs):
@@ -58,6 +65,7 @@ def on_mqtt_publish_received(event: str, **kwargs):
     _payload: bytes = kwargs.get('payload')
     global master
     topic_callback(master, _topic, _payload)
+    led.green_pixel()
     print(f'MQTT received topic: "{_topic}", payload: {_payload}')
 
     if _topic.endswith('/req') and _payload.decode('utf8') == 'reboot':
@@ -191,7 +199,9 @@ async def start():
     asyncio.create_task(lora_pkg(master, lora, 1))
     asyncio.create_task(check_outputs_value(master, 2))
     asyncio.create_task(check_schedule_value(master, 2))
-
+    
+    led.green_pixel()
+    
     try:
         while mqtt.is_connected:
             await asyncio.sleep(1)

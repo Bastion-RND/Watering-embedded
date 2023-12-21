@@ -1,8 +1,8 @@
 import machine
 import neopixel
 
-class Indication:
-    def __init__(self, np):
+class Indicate:
+    def __init__(self):
         self.np = neopixel.NeoPixel(machine.Pin(3), 1)
     
     def green_pixel(self):

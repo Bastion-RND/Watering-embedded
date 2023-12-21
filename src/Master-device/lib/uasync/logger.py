@@ -1,8 +1,30 @@
 from micropython import const
+import machine
+import neopixel
 
 CSI = '\033['
 OSC = '\033]'
 BEL = '\a'
+
+class Indication:
+    def __init__(self):
+        self.np = neopixel.NeoPixel(machine.Pin(3), 1)
+    
+    def green_pixel(self):
+        self.np[0] = (0, 128, 0)
+        self.np.write()
+        
+    def yellow_pixel(self):
+        self.np[0] = (255, 255, 0, 1)
+        self.np.write()
+        
+    def red_pixel(self):        
+        self.np[0] = (255, 0, 0)
+        self.np.write()
+    
+    def default_pixel(self):        
+        self.np[0] = (0, 0, 0)
+        self.np.write()
 
 
 def code_to_chars(code):
@@ -89,6 +111,7 @@ class Logger:
             self.DEBUG: f'[{self.set_color_text("DBG", Fore.WHITE, Back.BLUE)}]',
             self.TRACE: f'[{self.set_color_text("TRC", Fore.WHITE, Back.MAGENTA)}]',
         }
+        self.indication = Indication()
 
     @property
     def name(self):
@@ -118,16 +141,20 @@ class Logger:
         return f'{self.set_color(fore, back)}{text}{self.reset_color()}'
 
     def error(self, message):
+        self.indication.red_pixel()
         self._print_log(self.ERROR, message)
 
     def warning(self, message):
+        self.indication.yellow_pixel()
         self._print_log(self.WARNING, message)
 
     def info(self, message):
+        self.indication.green_pixel()
         self._print_log(self.INFO, message)
 
     def debug(self, message):
         self._print_log(self.DEBUG, message)
 
     def trace(self, message):
+        self.indication.default_pixel()
         self._print_log(self.TRACE, message)

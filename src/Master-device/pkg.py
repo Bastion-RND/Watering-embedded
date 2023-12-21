@@ -2,6 +2,7 @@ import ujson
 import random
 import ubinascii
 import machine
+from machine import Pin
 from micropython import const
 
 
@@ -57,18 +58,53 @@ class MasterDevice:
         self.sensor4 = SensorPkg()
         
         self.output1 = OutputPkg()
+        self.output1.out = None
+        self.output1.ontime = False
         self.output2 = OutputPkg()
+        self.output2.out = None
+        self.output2.ontime = False
         self.output3 = OutputPkg()
+        self.output3.out = None
+        self.output3.ontime = False
         self.output4 = OutputPkg()
+        self.output4.out = None
+        self.output4.ontime = False
         
         self.default_pkg = { "rssi": None, "humidity": None, "temperature": None,
                         "sensors": [{ "type": None, "uuid": None, "value": None, "lastTs": None }],
-                        "outputs": [{ "name": None, "value": None, "lastTs": None, "id": None, "uuidWirelessSensor": None,
+                        "outputs": [{ "name": "output 1", "value": None, "lastTs": None, "id": 1, "uuidWirelessSensor": None,
+                                      "schedule": { "startTs": None, "endTs": None }},
+                                    { "name": "output 2", "value": None, "lastTs": None, "id": 2, "uuidWirelessSensor": None,
+                                      "schedule": { "startTs": None, "endTs": None }},
+                                    { "name": "output 3", "value": None, "lastTs": None, "id": 3, "uuidWirelessSensor": None,
+                                      "schedule": { "startTs": None, "endTs": None }},
+                                    { "name": "output 4", "value": None, "lastTs": None, "id": 4, "uuidWirelessSensor": None,
                                       "schedule": { "startTs": None, "endTs": None }}],
                         "wirelessSensors": [{ "rssi": None, "name": None, "lastTs": None, "uid": None, "batteryLevel": None, "humidity": None }]}
         
         self.check_last()
 
+    def lora_data(self, uid, hum, bat, rssi):
+        if uid == self.lora1.uid:
+            self.lora1.lastTs = self.lastTs
+            self.lora1.humidity = hum
+            self.lora1.batteryLevel = bat
+            self.lora1.rssi = rssi
+        elif uid == self.lora2.uid:
+            self.lora2.lastTs = self.lastTs
+            self.lora2.humidity = hum
+            self.lora2.batteryLevel = bat
+            self.lora2.rssi = rssi
+        elif uid == self.lora3.uid:
+            self.lora3.lastTs = self.lastTs
+            self.lora3.humidity = hum
+            self.lora3.batteryLevel = bat
+            self.lora3.rssi = rssi
+        elif uid == self.lora4.uid:
+            self.lora4.lastTs = self.lastTs
+            self.lora4.humidity = hum
+            self.lora4.batteryLevel = bat
+            self.lora4.rssi = rssi
 
     def update_last(self, data):
         self.rssi = data.get("rssi")
@@ -121,7 +157,7 @@ class MasterDevice:
                 self.lora4.humidity = lora.get("humidity")
             except:
                 self.lora4 = LoraPkg()
-            
+
         temp = data.get("outputs")
         if temp != None:
             try:
@@ -164,7 +200,7 @@ class MasterDevice:
                 self.output4.schedule = output.get("schedule")
             except:
                 self.output4 = OutputPkg()
-                
+            
         temp = data.get("sensors")
         if temp != None:
             try:
@@ -209,22 +245,25 @@ class MasterDevice:
         except:
             with open("data.json", "w", encoding='utf-8') as f:
                 ujson.dump(self.default_pkg, f)
+                self.update_last(self.default_pkg)
             
             
     def add_lora(self, name, uid):
-        if self.lora1.uid == None:
-            self.lora1.name = name
-            self.lora1.uid = uid
-        elif self.lora2.uid == None:
-            self.lora2.name = name
-            self.lora2.uid = uid
-        elif self.lora3.uid == None:
-            self.lora3.name = name
-            self.lora3.uid = uid
-        elif self.lora4.uid == None:
-            self.lora4.name = name
-            self.lora4.uid = uid
-        self.convert_to_pkg()
+        if uid != self.lora1.uid or uid != self.lora2.uid or uid != self.lora3.uid or uid != self.lora4.uid:
+            if self.lora1.uid == None:
+                self.lora1.name = name
+                self.lora1.uid = uid
+            elif self.lora2.uid == None:
+                self.lora2.name = name
+                self.lora2.uid = uid
+            elif self.lora3.uid == None:
+                self.lora3.name = name
+                self.lora3.uid = uid
+            elif self.lora4.uid == None:
+                self.lora4.name = name
+                self.lora4.uid = uid
+            self.convert_to_pkg()
+        self.req = True
     
     def delete_lora(self, uid):
         if uid == self.lora1.uid:
@@ -236,6 +275,7 @@ class MasterDevice:
         elif uid == self.lora4.uid:
             self.lora4 = LoraPkg()
         self.convert_to_pkg()
+        self.req = True
 
     def update(self, data):
         temp = data.get("wirelessSensors")
@@ -257,36 +297,26 @@ class MasterDevice:
                 id = each.get("id")
                 if id == self.output1.id:
                     self.output1.name = each.get("name")
+                    self.output1.value = each.get("value")
                     self.output1.uuidWirelessSensor = each.get("uuidWirelessSensor")
                     self.output1.schedule = each.get("schedule")
                 elif id == self.output2.id:
                     self.output2.name = each.get("name")
+                    self.output2.value = each.get("value")
                     self.output2.uuidWirelessSensor = each.get("uuidWirelessSensor")
                     self.output2.schedule = each.get("schedule")
                 elif id == self.output3.id:
                     self.output3.name = each.get("name")
+                    self.output3.value = each.get("value")
                     self.output3.uuidWirelessSensor = each.get("uuidWirelessSensor")
                     self.output3.schedule = each.get("schedule")
                 elif id == self.output4.id:
                     self.output4.name = each.get("name")
+                    self.output4.value = each.get("value")
                     self.output4.uuidWirelessSensor = each.get("uuidWirelessSensor")
                     self.output4.schedule = each.get("schedule")
-        
-        #!FIXME types? sensors?
-#         temp = data.get("sensors")
-#         if temp != None:
-#             for each in temp:
-#                 uuid = each.get("uuid")
-#                 if uuid == self.sensor1.uuid:
-#                     self.sensor1.type = each.get("type")
-#                 elif uuid == self.sensor2.uuid:
-#                     self.sensor2.type = each.get("type")
-#                 elif uuid == self.sensor3.uuid:
-#                     self.sensor3.type = each.get("type")
-#                 elif uuid == self.sensor4.uuid:
-#                     self.sensor4.type = each.get("type")
         self.convert_to_pkg()
-
+        self.req=True
 
     def convert_to_pkg(self):
         jsonpkg = {}
@@ -346,87 +376,80 @@ class MasterDevice:
                         "uuidWirelessSensor": self.output4.uuidWirelessSensor, "schedule": self.output4.schedule }
             outputs.append(output4)
         jsonpkg["outputs"] = outputs
-        #save_to_file(jsonpkg)
+        self.save_to_file(jsonpkg)
         return(ujson.dumps(jsonpkg))
         
-    def save_to_file(data):
+    def save_to_file(self, data):
         with open("data.json", "w", encoding='utf-8') as f:
             ujson.dump(data, f)   
 
-# master = MasterDevice()
-# print(master.convert_to_pkg())
-
-
-
-# def jsonpkg(time_utc):
-#     #return ujson.dumps(         
-#     return (
-time_utc = 123
-test = {
-  "rssi": random.randint(0,100),
-  "humidity": random.randint(0,100),
-  "temperature": random.randint(0,100),
-  "sensors": [
-    {
-      "type": "sensor1",
-      "uuid": "d1baf02e-82dc-11ee-8aa5-00155d2572d2",
-      "value": random.randint(0,100),
-      "lastTs": time_utc
-    },
-    {
-      "type": "sensor2",
-      "uuid": "d1bah02e-82dc-11ee-8aa5-00155d2572d2",
-      "value": random.randint(0,100),
-      "lastTs": time_utc
-    }
-  ],
-  
-  "outputs": [
-    {
-      "name": "output1",
-      "value": True,
-      "lastTs": time_utc,
-      "id": 2,
-      "uuidWirelessSensor": "dc75f108-82dc-11ee-8911-00155d2572d2",
-      "schedule": {
-        "startTs": 45345345,
-        "endTs": 654645646
-      }
-    }, 
-    {
-      "name": "output2",
-      "value": False,
-      "lastTs": time_utc,
-      "id": 1,
-      "uuidWirelessSensor": "dc75f108-82dc-11ee-8911-00155d2572d2",
-      "schedule": {
-        "startTs": 45345345,
-        "endTs": 654645646
-      }    
-    }
-  ],
-  
-  "wirelessSensors": [
-    {
-      "rssi": random.randint(-100,100),
-      "name": "lora1",
-      "lastTs": time_utc,
-      "uid": "dc75f108-82dc-11ee-8911-00155d2572d2",
-      "batteryLevel": random.randint(0,100),
-      "humidity": random.randint(0,100)
-    },
-    
-    {
-      "rssi": random.randint(-100,100),
-      "name": "lora2",
-      "lastTs": time_utc,
-      "uid": "dc75f108-82dc-11ee-8911-00155d2572d3",
-      "batteryLevel": random.randint(0,100),
-      "humidity": random.randint(0,100)
-    }
-  ]
-}
+    def check_outputs_val(self):
+        if self.output1.ontime == False:
+            if self.output1.value == True:
+                self.output1.out(1)
+            elif self.output1.value == False:
+                self.output1.out(0)
+                
+        if self.output2.ontime == False:
+            if self.output2.value == True:
+                self.output2.out(1)
+            elif self.output2.value == False:
+                self.output2.out(0)
         
-# with open("data.json", "w", encoding='utf-8') as f:
-#     ujson.dump(test, f)        
-# )
+        if self.output3.ontime == False:        
+            if self.output3.value == True:
+                self.output3.out(1)
+            elif self.output3.value == False:
+                self.output3.out(0)
+        
+        if self.output4.ontime == False:       
+            if self.output4.value == True:
+                self.output4.out(1)
+            elif self.output4.value == False:
+                self.output4.out(0)
+
+    def check_outputs_sch(self):
+        if self.lastTs != None:
+            if self.output1.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+                if self.lastTs >= self.output1.schedule.get("startTs") and self.lastTs <= self.output1.schedule.get("endTs"):
+                    self.output1.lastTs =  self.lastTs
+                    self.output1.out(1)
+                    self.output1.ontime = True
+                elif self.lastTs >= self.output1.schedule.get("endTs"):
+                    self.output1.out(0)
+                    self.output1.ontime = False
+                    self.output1.schedule["startTs"] = self.output1.schedule.get("startTs") + 86400
+                    self.output1.schedule["endTs"] = self.output1.schedule.get("endTs") + 86400
+            
+            if self.output2.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+                if self.lastTs >= self.output2.schedule.get("startTs") and self.lastTs <= self.output2.schedule.get("endTs"):
+                    self.output2.lastTs =  self.lastTs
+                    self.output2.out(1)
+                    self.output2.ontime = True
+                elif self.lastTs >= self.output2.schedule.get("endTs"):
+                    self.output2.out(0)
+                    self.output2.ontime = False
+                    self.output2.schedule["startTs"] = self.output2.schedule.get("startTs") + 86400
+                    self.output2.schedule["endTs"] = self.output2.schedule.get("endTs") + 86400
+            
+            if self.output3.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+                if self.lastTs >= self.output3.schedule.get("startTs") and self.lastTs <= self.output3.schedule.get("endTs"):
+                    self.output3.lastTs =  self.lastTs
+                    self.output3.out(1)
+                    self.output3.ontime = True
+                elif self.lastTs >= self.output3.schedule.get("endTs"):
+                    self.output3.out(0)
+                    self.output3.ontime = False
+                    self.output3.schedule["startTs"] = self.output3.schedule.get("startTs") + 86400
+                    self.output3.schedule["endTs"] = self.output3.schedule.get("endTs") + 86400
+            
+            if self.output3.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+                if self.lastTs >= self.output4.schedule.get("startTs") and self.lastTs <= self.output4.schedule.get("endTs"):
+                    self.output4.lastTs =  self.lastTs
+                    self.output4.out(1)
+                    self.output4.ontime = True
+                elif self.lastTs >= self.output4.schedule.get("endTs"):
+                    self.output4.out(0)
+                    self.output4.ontime = False
+                    self.output4.schedule["startTs"] = self.output4.schedule.get("startTs") + 86400
+                    self.output4.schedule["endTs"] = self.output4.schedule.get("endTs") + 86400

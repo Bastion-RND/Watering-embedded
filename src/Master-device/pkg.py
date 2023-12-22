@@ -410,45 +410,46 @@ class MasterDevice:
 
     def check_outputs_sch(self):
         if self.lastTs != None:
-            if self.output1.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
-                if self.lastTs >= self.output1.schedule.get("startTs") and self.lastTs <= self.output1.schedule.get("endTs"):
+            if self.output1.schedule.get("startTs") != None and self.output1.schedule.get("endTs") != None:
+                if self.lastTs >= self.output1.schedule.get("startTs") and self.lastTs <= self.output1.schedule.get("endTs") and self.output1.ontime == False:
                     self.output1.lastTs =  self.lastTs
                     self.output1.out(1)
                     self.output1.ontime = True
-                elif self.lastTs >= self.output1.schedule.get("endTs"):
+                elif self.lastTs > self.output1.schedule.get("endTs") and self.output1.ontime == True:
+                    print("hhghfghfjfjgfjfgjgjghjghk")
                     self.output1.out(0)
                     self.output1.ontime = False
                     self.output1.schedule["startTs"] = self.output1.schedule.get("startTs") + 86400
                     self.output1.schedule["endTs"] = self.output1.schedule.get("endTs") + 86400
             
-            if self.output2.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+            if self.output2.schedule.get("startTs") != None and self.output2.schedule.get("endTs") != None:
                 if self.lastTs >= self.output2.schedule.get("startTs") and self.lastTs <= self.output2.schedule.get("endTs"):
                     self.output2.lastTs =  self.lastTs
                     self.output2.out(1)
                     self.output2.ontime = True
-                elif self.lastTs >= self.output2.schedule.get("endTs"):
+                elif self.lastTs > self.output2.schedule.get("endTs"):
                     self.output2.out(0)
                     self.output2.ontime = False
                     self.output2.schedule["startTs"] = self.output2.schedule.get("startTs") + 86400
                     self.output2.schedule["endTs"] = self.output2.schedule.get("endTs") + 86400
             
-            if self.output3.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+            if self.output3.schedule.get("startTs") != None and self.output3.schedule.get("endTs") != None:
                 if self.lastTs >= self.output3.schedule.get("startTs") and self.lastTs <= self.output3.schedule.get("endTs"):
                     self.output3.lastTs =  self.lastTs
                     self.output3.out(1)
                     self.output3.ontime = True
-                elif self.lastTs >= self.output3.schedule.get("endTs"):
+                elif self.lastTs > self.output3.schedule.get("endTs"):
                     self.output3.out(0)
                     self.output3.ontime = False
                     self.output3.schedule["startTs"] = self.output3.schedule.get("startTs") + 86400
                     self.output3.schedule["endTs"] = self.output3.schedule.get("endTs") + 86400
             
-            if self.output3.schedule.get("startTs") != None and self.lastTs <= self.output1.schedule.get("endTs") != None:
+            if self.output3.schedule.get("startTs") != None and self.output4.schedule.get("endTs") != None:
                 if self.lastTs >= self.output4.schedule.get("startTs") and self.lastTs <= self.output4.schedule.get("endTs"):
                     self.output4.lastTs =  self.lastTs
                     self.output4.out(1)
                     self.output4.ontime = True
-                elif self.lastTs >= self.output4.schedule.get("endTs"):
+                elif self.lastTs > self.output4.schedule.get("endTs"):
                     self.output4.out(0)
                     self.output4.ontime = False
                     self.output4.schedule["startTs"] = self.output4.schedule.get("startTs") + 86400

@@ -296,60 +296,25 @@ class MasterDevice:
         if temp != None:
             for each in temp:
                 id = each.get("id")
-                uuid = each.get("uuidWirelessSensor")
-                if uuid in [self.output1.uuidWirelessSensor, self.output2.uuidWirelessSensor,
-                            self.output3.uuidWirelessSensor, self.output4.uuidWirelessSensor]:
-                    if uuid == self.output1.uuidWirelessSensor:
-                        self.output1.uuidWirelessSensor = None
-                    elif uuid == self.output2.uuidWirelessSensor:
-                        self.output2.uuidWirelessSensor = None
-                    elif uuid == self.output3.uuidWirelessSensor:
-                        self.output3.uuidWirelessSensor = None
-                    elif uuid == self.output4.uuidWirelessSensor:
-                        self.output4.uuidWirelessSensor = None
                 if id == self.output1.id:
                     self.output1.name = each.get("name")
                     self.output1.value = each.get("value")
                     self.output1.uuidWirelessSensor = each.get("uuidWirelessSensor")
-                    if self.output1.uuidWirelessSensor == self.output2.uuidWirelessSensor:
-                        self.output2.uuidWirelessSensor = None
-                    elif self.output1.uuidWirelessSensor == self.output3.uuidWirelessSensor:
-                        self.output3.uuidWirelessSensor = None
-                    elif self.output1.uuidWirelessSensor == self.output4.uuidWirelessSensor:
-                        self.output4.uuidWirelessSensor = None
                     self.output1.schedule = each.get("schedule")
                 elif id == self.output2.id:
                     self.output2.name = each.get("name")
                     self.output2.value = each.get("value")
                     self.output2.uuidWirelessSensor = each.get("uuidWirelessSensor")
-                    if self.output2.uuidWirelessSensor == self.output1.uuidWirelessSensor:
-                        self.output1.uuidWirelessSensor = None
-                    elif self.output2.uuidWirelessSensor == self.output3.uuidWirelessSensor:
-                        self.output3.uuidWirelessSensor = None
-                    elif self.output2.uuidWirelessSensor == self.output4.uuidWirelessSensor:
-                        self.output4.uuidWirelessSensor = None
                     self.output2.schedule = each.get("schedule")
                 elif id == self.output3.id:
                     self.output3.name = each.get("name")
                     self.output3.value = each.get("value")
                     self.output3.uuidWirelessSensor = each.get("uuidWirelessSensor")
-                    if self.output3.uuidWirelessSensor == self.output1.uuidWirelessSensor:
-                        self.output1.uuidWirelessSensor = None
-                    elif self.output3.uuidWirelessSensor == self.output2.uuidWirelessSensor:
-                        self.output2.uuidWirelessSensor = None
-                    elif self.output3.uuidWirelessSensor == self.output4.uuidWirelessSensor:
-                        self.output4.uuidWirelessSensor = None
                     self.output3.schedule = each.get("schedule")
                 elif id == self.output4.id:
                     self.output4.name = each.get("name")
                     self.output4.value = each.get("value")
                     self.output4.uuidWirelessSensor = each.get("uuidWirelessSensor")
-                    if self.output4.uuidWirelessSensor == self.output1.uuidWirelessSensor:
-                        self.output1.uuidWirelessSensor = None
-                    elif self.output4.uuidWirelessSensor == self.output2.uuidWirelessSensor:
-                        self.output2.uuidWirelessSensor = None
-                    elif self.output4.uuidWirelessSensor == self.output3.uuidWirelessSensor:
-                        self.output3.uuidWirelessSensor = None
                     self.output4.schedule = each.get("schedule")
         self.convert_to_pkg()
         self.req = True

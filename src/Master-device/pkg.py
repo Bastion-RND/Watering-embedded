@@ -295,6 +295,17 @@ class MasterDevice:
         if temp != None:
             for each in temp:
                 id = each.get("id")
+                uuid = each.get("uuidWirelessSensor")
+                if uuid in [self.output1.uuidWirelessSensor, self.output2.uuidWirelessSensor,
+                            self.output3.uuidWirelessSensor, self.output4.uuidWirelessSensor]:
+                    if uuid == self.output1.uuidWirelessSensor:
+                        self.output1.uuidWirelessSensor = None
+                    elif uuid == self.output2.uuidWirelessSensor:
+                        self.output2.uuidWirelessSensor = None
+                    elif uuid == self.output3.uuidWirelessSensor:
+                        self.output3.uuidWirelessSensor = None
+                    elif uuid == self.output4.uuidWirelessSensor:
+                        self.output4.uuidWirelessSensor = None
                 if id == self.output1.id:
                     self.output1.name = each.get("name")
                     self.output1.value = each.get("value")

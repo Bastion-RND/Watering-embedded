@@ -1,5 +1,4 @@
 import machine
-from machine import SPI, Pin
 import uasyncio as asyncio
 import usocket as socket
 import ubinascii
@@ -7,20 +6,19 @@ import ujson
 
 from pkg import MasterDevice
 from LoRa import Lora
-
+from machine import SPI, Pin
 from micropython import const
 from machine import UART, Pin
 from network import WLAN, STA_IF
 from lib.gsm.SIM800x import SIM800x
 from lib.umqtt.client import MQTTClient, Logger
-
 from lib.pixel import Indicate
 
 led = Indicate()
-
-global master
 master = MasterDevice()
 period_time = const(10)
+
+global master
 
 def connect() -> WLAN:
     sta_if = WLAN(STA_IF)
@@ -144,6 +142,7 @@ async def start():
     
     spi = SPI(2, baudrate=4000000, sck=Pin(14, Pin.OUT, Pin.PULL_DOWN), mosi=Pin(13, Pin.OUT, Pin.PULL_DOWN),
               miso=Pin(12, Pin.IN, Pin.PULL_UP))
+    
     spi.deinit()
     spi.init()
     

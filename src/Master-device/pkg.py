@@ -5,7 +5,6 @@ import machine
 from machine import Pin
 from micropython import const
 
-
 class LoraPkg:
     def __init__(self):
         self.name = None
@@ -16,14 +15,12 @@ class LoraPkg:
         self.batteryLevel = None
         self.humidity = None
 
-
 class SensorPkg:
     def __init__(self):
         self.type = None
         self.uuid = None
         self.value = None
         self.lastTs = None
-
 
 class OutputPkg:
     def __init__(self):
@@ -33,7 +30,6 @@ class OutputPkg:
         self.value = None
         self.lastTs = None
         self.schedule = {'startTs' : None, 'endTs' : None}
-
 
 class MasterDevice:
     def __init__(self):

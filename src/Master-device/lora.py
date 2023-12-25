@@ -1,6 +1,6 @@
 import time
-from machine import SPI, Pin
 
+from machine import SPI, Pin
 from ubinascii import hexlify
 
 class Lora:

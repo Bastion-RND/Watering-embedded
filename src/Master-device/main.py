@@ -187,6 +187,7 @@ async def start():
 
     dio1.irq(trigger=Pin.IRQ_RISING, handler=lora.callback())
     dio1.irq
+    
     lora.set_lora_modulation()
     lora.set_sync_word()
     lora.set_lora_packet()

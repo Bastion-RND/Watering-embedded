@@ -15,14 +15,27 @@
 #include "lora_func.h"
 //#include "driver_llcc68.h"
 
+#define CONFIG_EEPROM_ADDRESS 0x27
+#define DEFAULT_SOIL_HUMIDITY_MIN 150
+#define DEFAULT_SOIL_HUMIDITY_MAX 2500
+#define BATTERY_MAX_MV 4900
+#define BATTERY_MIN_MV 2700
+
+void InitDelay();
+void InitLed();
+
 uint16_t ADCValue[ADC_SAMPLES_BUFFER_SIZE];
 uint32_t HUMvalue = 0;
 uint32_t BATvalue = 0;
 uint32_t VREFvalue = 0;
 uint32_t Voltage = 0;
 
-void InitDelay();
-void InitLed();
+BootStatus boot_mode;
+uint8_t lora_start = 0;
+
+DeviceConfig_t Config;
+LoraPackage_t Package;
+
 
 
 static __IO uint32_t TimingDelay;
@@ -50,9 +63,9 @@ void LedToggling(GPIO_TypeDef * port, uint16_t pin, uint8_t times)
 {
 	for(uint8_t i = 0; i != times; i++){
 		GPIO_WriteBit(port, pin, SET);
-		delay_ms(200);
+		delay_ms(50);
 		GPIO_WriteBit(port, pin, RESET);
-		delay_ms(200);
+		delay_ms(50);
 	}
 }
 
@@ -64,12 +77,12 @@ uint8_t Check_RCC()
 	RCC_ClearFlag();
 	if(powres)
 	{
-		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 2);
+//		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 2);
 		return HARD_RESET;
 	}
 	else if(lowres)
 	{
-		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 1);
+//		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 1);
 		return SOFT_RESET;
 	}
 	return OTHER_RESET;
@@ -154,32 +167,43 @@ static int voltage_ref(uint32_t raw, int vdda)
 }
 
 
-uint8_t Approx_HUM(uint16_t hum, DeviceConfig_t conf)
+uint8_t Approx_HUM(uint16_t hum, uint8_t bat)
 {
+	uint8_t humidity = 0;
 	if (hum > 0)
 	{
-		if (hum <= (conf.soil_humidity_MAX * 0.11))
+		if (bat >= 50)
 		{
-			return (uint8_t) ((hum * 20) / (conf.soil_humidity_MAX * 0.11));
-		}
-		else if (hum >= (conf.soil_humidity_MAX * 0.89))
-		{
-			return ((uint8_t) ((hum * 20) / (conf.soil_humidity_MAX * 0.11)) - 82);
+			humidity = (uint8_t)(0.0346 * hum + 8.42);
 		}
 		else
 		{
-			return ((uint8_t) ((hum * 60) / (conf.soil_humidity_MAX - conf.soil_humidity_MAX * 0.11 * 2)) + 20);
+			humidity = (uint8_t)(0.0462 * hum + 8.84);
 		}
 	}
-	return 0;
+	if (humidity >= 100)
+	{
+		humidity = 100;
+	}
+	else if(humidity <= 0)
+	{
+		humidity = 0;
+	}
+	return humidity;
 }
 
-#define BATTERY_MAX_MV 4500
-#define BATTERY_MIN_MV 2700
 
 uint8_t Approx_BAT(uint16_t bat)
 {
-	return (uint8_t)((((bat*2) - BATTERY_MIN_MV) * 100) / (BATTERY_MAX_MV - BATTERY_MIN_MV));
+	uint8_t battery = (uint8_t)(0.09 * bat - 126);
+	if (battery >= 100){
+		battery = 100;
+	}
+	else if (battery <= 0)
+	{
+		battery = 0;
+	}
+	return battery;
 }
 
 uint32_t CRC_MCU_ID()
@@ -194,7 +218,7 @@ uint32_t CRC_MCU_ID()
 }
 
 
-LoraPackage_t ToPackage(LoraPackage_t package, uint16_t hum, uint16_t bat, DeviceConfig_t conf)
+LoraPackage_t ToPackage(LoraPackage_t package, uint16_t hum, uint16_t bat)
 {
 	uint32_t ID = CRC_MCU_ID();
 	package.MCU_ID[0] = (uint8_t)((ID & 0xFF000000) >> 24);
@@ -203,19 +227,7 @@ LoraPackage_t ToPackage(LoraPackage_t package, uint16_t hum, uint16_t bat, Devic
 	package.MCU_ID[3] = (uint8_t)((ID & 0x000000FF) >> 0);
 
 	package.battery_percent =  Approx_BAT(bat);
-	if (package.battery_percent < 40)
-	{
-		hum = (uint16_t)(hum * 1.2);
-	}
-	if (package.battery_percent > 100)
-	{
-		package.battery_percent = 100;
-	}
-	package.soil_humidity = Approx_HUM(hum, conf);
-	if (package.soil_humidity > 100)
-	{
-		package.soil_humidity = 100;
-	}
+	package.soil_humidity = Approx_HUM(hum, package.battery_percent);
 
 	return package;
 }
@@ -224,38 +236,25 @@ void Check_HUM(uint8_t hum)
 {
 	if ((hum <= 100) && hum > 80)
 	{
-		LedToggling(LED100_GPIO_PORT, LED100_GPIO_PIN, 5);
+		LedToggling(LED100_GPIO_PORT, LED100_GPIO_PIN, 15);
 	}
 	else if ((hum <= 80) && hum > 60)
 	{
-		LedToggling(LED80_GPIO_PORT, LED80_GPIO_PIN, 5);
+		LedToggling(LED80_GPIO_PORT, LED80_GPIO_PIN, 15);
 	}
 	else if ((hum <= 60) && hum > 40)
 	{
-		LedToggling(LED60_GPIO_PORT, LED60_GPIO_PIN, 5);
+		LedToggling(LED60_GPIO_PORT, LED60_GPIO_PIN, 15);
 	}
 	else if ((hum <= 40) && hum > 20)
 	{
-		LedToggling(LED40_GPIO_PORT, LED40_GPIO_PIN, 5);
+		LedToggling(LED40_GPIO_PORT, LED40_GPIO_PIN, 15);
 	}
 	else
 	{
-		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 5);
+		LedToggling(LED20_GPIO_PORT, LED20_GPIO_PIN, 15);
 	}
 }
-
-
-
-BootStatus boot_mode;
-uint8_t lora_start = 0;
-
-#define CONFIG_EEPROM_ADDRESS 42
-#define DEFAULT_SOIL_HUMIDITY_MIN 150
-#define DEFAULT_SOIL_HUMIDITY_MAX 2000
-
-DeviceConfig_t Config;
-LoraPackage_t Package;
-
 
 
 int main()
@@ -268,18 +267,16 @@ int main()
 
 	boot_mode = Check_RCC();
 	EepromInFlash.read(CONFIG_EEPROM_ADDRESS, Config.u8, sizeof(DeviceConfig_t));
-
 	if (boot_mode == HARD_RESET)
 		{
-			Config.boot_count = Config.boot_count + 1;
-			if(Config.soil_humidity_MAX == 0) {
-				Config.soil_humidity_MAX = DEFAULT_SOIL_HUMIDITY_MAX;
-				EepromInFlash.write(CONFIG_EEPROM_ADDRESS, Config.u8, sizeof(DeviceConfig_t));
+			if(Config.boot_count == 0) {
+				//Config.soil_humidity_MAX = DEFAULT_SOIL_HUMIDITY_MAX;
 				lora_start = 1;
 				txen_init();
 				lora_init();
 				dio1_interrupt_init();
 			}
+			Config.boot_count = Config.boot_count + 1;
 		}
 
 	DMAInit();
@@ -288,22 +285,17 @@ int main()
 
 	while (Voltage == 0){}
 
-	if (HUMvalue > Config.soil_humidity_MAX)
-	{
-		Config.soil_humidity_MAX = HUMvalue;
-	}
+//	if (HUMvalue > Config.soil_humidity_MAX)
+//	{
+//		Config.soil_humidity_MAX = HUMvalue;
+//	}
 
-	Package = ToPackage(Package, HUMvalue, BATvalue, Config);
+	Package = ToPackage(Package, HUMvalue, BATvalue);
 	Check_HUM(Package.soil_humidity);
 
-	if ((Config.boot_count % 4 != 0) && (Config.soil_humidity_LAST == Package.soil_humidity))
-	{
-		GPIO_WriteBit(TIM_DONE_PORT, TIM_DONE_PIN, SET);
-	}
-	else
+	if (((Config.boot_count % 4) == 0) || (Config.soil_humidity_LAST != Package.soil_humidity))
 	{
 		Config.soil_humidity_LAST = Package.soil_humidity;
-		EepromInFlash.write(CONFIG_EEPROM_ADDRESS, Config.u8, sizeof(DeviceConfig_t));
 		if (lora_start == 0)
 		{
 			txen_init();
@@ -311,26 +303,14 @@ int main()
 			dio1_interrupt_init();
 		}
 		lora_sent(Package.u8, sizeof(LoraPackage_t));
-		LedToggling(LED60_GPIO_PORT, LED60_GPIO_PIN, 3);
+		LedToggling(LED100_GPIO_PORT, LED100_GPIO_PIN, 3);
 	}
+	EepromInFlash.write(CONFIG_EEPROM_ADDRESS, Config.u8, sizeof(DeviceConfig_t));
 	GPIO_WriteBit(TIM_DONE_PORT, TIM_DONE_PIN, SET);
-//	uint8_t payload[6];
 	while (1)
 	{
-////		lora_sent(Package.u8, sizeof(LoraPackage_t));
-////		Package.MCU_ID = 0x01234567;
-////		Package.soil_humidity = 0x89;
-////		payload[0] = (uint8_t)((Package.MCU_ID & 0xFF000000) >> 24);
-////		payload[1] = (uint8_t)((Package.MCU_ID & 0x00FF0000) >> 16);
-////		payload[2] = (uint8_t)((Package.MCU_ID & 0x0000FF00) >> 8);
-////		payload[3] = (uint8_t)((Package.MCU_ID & 0x000000FF) >> 0);
-////		payload[4] = Package.soil_humidity;
-////		payload[5] = Package.battery_percent;
-//
-////		lora_sent(Package.u8, sizeof(LoraPackage_t));
-////		lora_sent(payload, 6);
 		delay_ms(1000);
-		LedToggling(LED60_GPIO_PORT, LED60_GPIO_PIN, 3);
+//		/LedToggling(LED100_GPIO_PORT, LED100_GPIO_PIN, 3);
 	}
 }
 

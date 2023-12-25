@@ -24,10 +24,10 @@ typedef struct DeviceConfig_ {
 	union {
 		struct{
 			uint32_t boot_count;
-			uint16_t soil_humidity_MAX;
+//			uint16_t soil_humidity_MAX;
 			uint8_t soil_humidity_LAST;
 		};
-		uint8_t u8[7];
+		uint8_t u8[5];
 	};
 } DeviceConfig_t;
 

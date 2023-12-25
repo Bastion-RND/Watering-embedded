@@ -233,68 +233,46 @@ void receive_callback(uint16_t type, uint8_t *buf, uint16_t len)
     {
         case LLCC68_IRQ_TX_DONE :
         {
-        	debug_print("llcc68: irq tx done.\n");
-
             break;
         }
         case LLCC68_IRQ_RX_DONE :
         {
-        	debug_print("llcc68: irq rx done.\n");
-
             break;
         }
         case LLCC68_IRQ_PREAMBLE_DETECTED :
         {
-        	debug_print("llcc68: irq preamble detected.\n");
-
             break;
         }
         case LLCC68_IRQ_SYNC_WORD_VALID :
         {
-        	debug_print("llcc68: irq valid sync word detected.\n");
-
             break;
         }
         case LLCC68_IRQ_HEADER_VALID :
         {
-        	debug_print("llcc68: irq valid header.\n");
-
             break;
         }
         case LLCC68_IRQ_HEADER_ERR :
         {
-        	debug_print("llcc68: irq header error.\n");
-
             break;
         }
         case LLCC68_IRQ_CRC_ERR :
         {
-        	debug_print("llcc68: irq crc error.\n");
-
             break;
         }
         case LLCC68_IRQ_CAD_DONE :
         {
-        	debug_print("llcc68: irq cad done.\n");
-
             break;
         }
         case LLCC68_IRQ_CAD_DETECTED :
         {
-        	debug_print("llcc68: irq cad detected.\n");
-
             break;
         }
         case LLCC68_IRQ_TIMEOUT :
         {
-        	debug_print("llcc68: irq timeout.\n");
-
             break;
         }
         default :
         {
-        	debug_print("llcc68: unknown code.\n");
-
             break;
         }
     }

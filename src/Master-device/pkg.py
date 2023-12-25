@@ -33,6 +33,8 @@ class OutputPkg:
         self.value = None
         self.lastTs = None
         self.schedule = {'startTs': None, 'endTs': None}
+        self.ontime = False
+        self.hum_endTs = None
 
 
 class MasterDevice:
@@ -59,16 +61,12 @@ class MasterDevice:
 
         self.output1 = OutputPkg()
         self.output1.out = None
-        self.output1.ontime = False
         self.output2 = OutputPkg()
         self.output2.out = None
-        self.output2.ontime = False
         self.output3 = OutputPkg()
         self.output3.out = None
-        self.output3.ontime = False
         self.output4 = OutputPkg()
         self.output4.out = None
-        self.output4.ontime = False
 
         self.default_pkg = {"rssi": None, "humidity": None, "temperature": None,
                             "sensors": [{"type": None, "uuid": None, "value": None, "lastTs": None}],
@@ -291,8 +289,9 @@ class MasterDevice:
                     self.lora3.name = each.get("name")
                 elif uid == self.lora4.uid:
                     self.lora4.name = each.get("name")
-
+                    
         temp = data.get("outputs")
+        already_added = []
         if temp != None:
             for each in temp:
                 id = each.get("id")
@@ -300,49 +299,53 @@ class MasterDevice:
                 if id == self.output1.id:
                     self.output1.name = each.get("name")
                     self.output1.value = each.get("value")
-                    if self.output1.uuidWirelessSensor != uuid:
+                    if self.output1.uuidWirelessSensor != uuid and uuid not in already_added:
                         self.output1.uuidWirelessSensor = uuid
+                        already_added.append(uuid)
                         if self.output2.uuidWirelessSensor == uuid:
                             self.output2.uuidWirelessSensor = None
-                        elif self.output3.uuidWirelessSensor == uuid:
+                        if self.output3.uuidWirelessSensor == uuid:
                             self.output3.uuidWirelessSensor = None
-                        elif self.output4.uuidWirelessSensor == uuid:
+                        if self.output4.uuidWirelessSensor == uuid:
                             self.output4.uuidWirelessSensor = None
                     self.output1.schedule = each.get("schedule")
                 elif id == self.output2.id:
                     self.output2.name = each.get("name")
                     self.output2.value = each.get("value")
-                    if self.output2.uuidWirelessSensor != uuid:
+                    if self.output2.uuidWirelessSensor != uuid and uuid not in already_added:
                         self.output2.uuidWirelessSensor = uuid
+                        already_added.append(uuid)
                         if self.output1.uuidWirelessSensor == uuid:
                             self.output1.uuidWirelessSensor = None
-                        elif self.output3.uuidWirelessSensor == uuid:
+                        if self.output3.uuidWirelessSensor == uuid:
                             self.output3.uuidWirelessSensor = None
-                        elif self.output4.uuidWirelessSensor == uuid:
+                        if self.output4.uuidWirelessSensor == uuid:
                             self.output4.uuidWirelessSensor = None
                     self.output2.schedule = each.get("schedule")
                 elif id == self.output3.id:
                     self.output3.name = each.get("name")
                     self.output3.value = each.get("value")
-                    if self.output3.uuidWirelessSensor != uuid:
+                    if self.output3.uuidWirelessSensor != uuid and uuid not in already_added:
                         self.output3.uuidWirelessSensor = uuid
+                        already_added.append(uuid)
                         if self.output1.uuidWirelessSensor == uuid:
                             self.output1.uuidWirelessSensor = None
-                        elif self.output2.uuidWirelessSensor == uuid:
+                        if self.output2.uuidWirelessSensor == uuid:
                             self.output2.uuidWirelessSensor = None
-                        elif self.output4.uuidWirelessSensor == uuid:
+                        if self.output4.uuidWirelessSensor == uuid:
                             self.output4.uuidWirelessSensor = None
                     self.output3.schedule = each.get("schedule")
                 elif id == self.output4.id:
                     self.output4.name = each.get("name")
                     self.output4.value = each.get("value")
-                    if self.output4.uuidWirelessSensor != uuid:
+                    if self.output4.uuidWirelessSensor != uuid and uuid not in already_added:
                         self.output4.uuidWirelessSensor = uuid
+                        already_added.append(uuid)
                         if self.output1.uuidWirelessSensor == uuid:
                             self.output1.uuidWirelessSensor = None
-                        elif self.output2.uuidWirelessSensor == uuid:
+                        if self.output2.uuidWirelessSensor == uuid:
                             self.output2.uuidWirelessSensor = None
-                        elif self.output3.uuidWirelessSensor == uuid:
+                        if self.output3.uuidWirelessSensor == uuid:
                             self.output3.uuidWirelessSensor = None
                     self.output4.schedule = each.get("schedule")
         self.convert_to_pkg()
@@ -446,53 +449,83 @@ class MasterDevice:
             elif self.output4.value == False:
                 self.output4.out(0)
 
-# -1*x + 100
+    def hum_out_math(self, uuid, start, end):
+        if uuid != None:
+            if uuid == self.lora1.uid:
+                hum = self.lora1.humidity
+            elif uuid == self.lora2.uid:
+                hum = self.lora2.humidity
+            elif uuid == self.lora3.uid:
+                hum = self.lora3.humidity
+            elif uuid == self.lora4.uid:
+                hum = self.lora4.humidity
+        else:
+            return end
+        if hum != None:
+            endts = int(((end - start) * (hum * (-0.01) + 1)) + start)
+            return endts
+        else:
+            return end
+
+
     def check_outputs_sch(self):
         if self.lastTs != None:
             if self.output1.schedule.get("startTs") != None and self.output1.schedule.get("endTs") != None:
                 if self.lastTs >= self.output1.schedule.get("startTs") and self.lastTs <= self.output1.schedule.get(
                         "endTs") and self.output1.ontime == False:
+                    self.output1.hum_endTs = self.hum_out_math(self.output1.uuidWirelessSensor,
+                                                                self.output1.schedule.get("startTs"), self.output1.schedule.get("endTs"))
                     self.output1.lastTs = self.lastTs
                     self.output1.out(1)
                     self.output1.ontime = True
-                elif self.lastTs > self.output1.schedule.get("endTs") and self.output1.ontime == True:
+                elif self.output1.hum_endTs != None and self.lastTs > self.output1.hum_endTs and self.output1.ontime == True:
                     self.output1.out(0)
                     self.output1.ontime = False
                     self.output1.schedule["startTs"] = self.output1.schedule.get("startTs") + 86400
                     self.output1.schedule["endTs"] = self.output1.schedule.get("endTs") + 86400
+                    self.convert_to_pkg()
 
             if self.output2.schedule.get("startTs") != None and self.output2.schedule.get("endTs") != None:
                 if self.lastTs >= self.output2.schedule.get("startTs") and self.lastTs <= self.output2.schedule.get(
                         "endTs"):
+                    self.output2.hum_endTs = self.hum_out_math(self.output2.uuidWirelessSensor,
+                                                                self.output2.schedule.get("startTs"), self.output2.schedule.get("endTs"))
                     self.output2.lastTs = self.lastTs
                     self.output2.out(1)
                     self.output2.ontime = True
-                elif self.lastTs > self.output2.schedule.get("endTs"):
+                elif self.output2.hum_endTs != None and self.lastTs > self.output2.hum_endTs and self.output2.ontime == True:
                     self.output2.out(0)
                     self.output2.ontime = False
                     self.output2.schedule["startTs"] = self.output2.schedule.get("startTs") + 86400
                     self.output2.schedule["endTs"] = self.output2.schedule.get("endTs") + 86400
+                    self.convert_to_pkg()
 
             if self.output3.schedule.get("startTs") != None and self.output3.schedule.get("endTs") != None:
                 if self.lastTs >= self.output3.schedule.get("startTs") and self.lastTs <= self.output3.schedule.get(
                         "endTs"):
+                    self.output3.hum_endTs = self.hum_out_math(self.output3.uuidWirelessSensor,
+                                                                self.output3.schedule.get("startTs"), self.output3.schedule.get("endTs"))
                     self.output3.lastTs = self.lastTs
                     self.output3.out(1)
                     self.output3.ontime = True
-                elif self.lastTs > self.output3.schedule.get("endTs"):
+                elif self.output3.hum_endTs != None and self.lastTs > self.output3.hum_endTs and self.output3.ontime == True:
                     self.output3.out(0)
                     self.output3.ontime = False
                     self.output3.schedule["startTs"] = self.output3.schedule.get("startTs") + 86400
                     self.output3.schedule["endTs"] = self.output3.schedule.get("endTs") + 86400
+                    self.convert_to_pkg()
 
             if self.output3.schedule.get("startTs") != None and self.output4.schedule.get("endTs") != None:
                 if self.lastTs >= self.output4.schedule.get("startTs") and self.lastTs <= self.output4.schedule.get(
                         "endTs"):
+                    self.output4.hum_endTs = self.hum_out_math(self.output4.uuidWirelessSensor,
+                                                                self.output4.schedule.get("startTs"), self.output4.schedule.get("endTs"))
                     self.output4.lastTs = self.lastTs
                     self.output4.out(1)
                     self.output4.ontime = True
-                elif self.lastTs > self.output4.schedule.get("endTs"):
+                elif self.output4.hum_endTs != None and self.lastTs > self.output4.hum_endTs and self.output4.ontime == True:
                     self.output4.out(0)
                     self.output4.ontime = False
                     self.output4.schedule["startTs"] = self.output4.schedule.get("startTs") + 86400
                     self.output4.schedule["endTs"] = self.output4.schedule.get("endTs") + 86400
+                    self.convert_to_pkg()

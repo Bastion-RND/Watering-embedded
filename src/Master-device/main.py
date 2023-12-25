@@ -130,6 +130,15 @@ async def check_api(master, mqtt, period_s):
 async def start():
     await asyncio.sleep(1)
 
+    master.output1.out = Pin(42, Pin.OUT, Pin.PULL_DOWN)
+    master.output1.out(0)
+    master.output2.out = Pin(41, Pin.OUT, Pin.PULL_DOWN)
+    master.output2.out(0)
+    master.output3.out = Pin(40, Pin.OUT, Pin.PULL_DOWN)
+    master.output3.out(0)
+    master.output4.out = Pin(39, Pin.OUT, Pin.PULL_DOWN)
+    master.output4.out(0)
+    
     #wlan = connect() #for Wi-Fi connect
     sim800 = SIM800x(UART(2, 115200, rx=17, tx=18), log_level=Logger.WARNING)
     
@@ -147,11 +156,6 @@ async def start():
     spi.init()
     
     lora = Lora(spi, cs, reset, busy, dio1, txen, rxen)
-
-    master.output1.out = Pin(42, Pin.OUT, Pin.PULL_DOWN)
-    master.output2.out = Pin(41, Pin.OUT, Pin.PULL_DOWN)
-    master.output3.out = Pin(40, Pin.OUT, Pin.PULL_DOWN)
-    master.output4.out = Pin(39, Pin.OUT, Pin.PULL_DOWN)
 
     for _event in SIM800x.EVENTS_LIST:
         sim800.append_callback(_event, on_sim800_event)
@@ -182,6 +186,7 @@ async def start():
     mqtt.publish(topic=f'{master.uuid}/status',payload='1', retain=True)
   
     lora.begin()
+    
     lora.set_frequency()
     lora.set_rx_gain()
 

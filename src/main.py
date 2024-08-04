@@ -6,7 +6,7 @@ import ubinascii
 import ujson
 
 from pkg import MasterDevice
-from LoRa import Lora
+from lora import Lora
 
 from micropython import const
 from machine import UART, Pin

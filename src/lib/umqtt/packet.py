@@ -6,7 +6,6 @@ from lib.umqtt.exception import MQTTException
 
 # @formatter:off
 
-
 MQTT_VERSION_3_1            = const(3)
 MQTT_VERSION_3_1_1          = const(4)
 

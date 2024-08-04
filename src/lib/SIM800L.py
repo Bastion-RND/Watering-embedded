@@ -15,7 +15,6 @@ except:
         @classmethod
         def debug(cls, text):
             if cls.level == 'DEBUG': print('DEBUG:', text)
-            
 
         @classmethod
         def info(cls, text):
